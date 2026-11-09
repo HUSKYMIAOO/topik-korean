@@ -74,6 +74,7 @@ const exerciseBank=[[1,"저는 선생님이에요.","선생님이에요","선생
 function exerciseFor(id){const list=exerciseBank.filter(v=>v[0]===id);return list[Math.floor(Math.random()*list.length)]}
 function wordNotes(q){const bank=window.TOPIK_LEXICON||[];const book=window.topikBookRead?topikBookRead():{};const entries=(q.lexicon||"").split(";").filter(Boolean).map(v=>v.split("|"));return entries.length?'<div style="margin-top:12px;border-top:1px solid #cbd0e4;padding-top:10px"><b>📖 新出単語 / 生词</b>'+entries.map(([ko,ja,zh])=>{return '<div class="row" style="justify-content:space-between;border-top:1px solid #ddd;padding:9px 0"><span><b>'+escapeHTML(ko)+'</b><br>🇯🇵 '+escapeHTML(ja)+' · 🇨🇳 '+escapeHTML(zh)+'</span><button data-ko="'+escapeHTML(ko)+'" onclick="saveUnknown(this)">'+(book[ko]?'✓ 保存済み':'⭐ 生詞帳に追加')+'</button></div>'}).join("")+'<a href="./dictionary.html?view=unknown">📒 生詞帳を見る →</a></div>':""}
 function saveUnknown(btn){if(!window.topikBookToggle)return;const saved=topikBookToggle(btn.dataset.ko);btn.textContent=saved?"✓ 保存済み":"⭐ 生詞帳に追加"}
+const types=["穴埋め","活用","間違い探し","語順","韓日翻訳","日韓翻訳","文法の意味"];
 function choicesFor(correct,distractors){return shuffle(unique([correct,...distractors.filter(x=>x!==correct)]).slice(0,4))}
 function makeQ(x,forced){
  const type=forced||types[Math.floor(Math.random()*types.length)],sp=special[x.id],other=shuffle(data.filter(v=>v.id!==x.id));
