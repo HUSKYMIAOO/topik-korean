@@ -75,6 +75,7 @@ function exerciseFor(id){const list=exerciseBank.filter(v=>v[0]===id);return lis
 function wordNotes(q){const bank=window.TOPIK_LEXICON||[];const book=window.topikBookRead?topikBookRead():{};const entries=(q.lexicon||"").split(";").filter(Boolean).map(v=>v.split("|"));return entries.length?'<div style="margin-top:12px;border-top:1px solid #cbd0e4;padding-top:10px"><b>📖 新出単語 / 生词</b>'+entries.map(([ko,ja,zh])=>{return '<div class="row" style="justify-content:space-between;border-top:1px solid #ddd;padding:9px 0"><span><b>'+escapeHTML(ko)+'</b><br>🇯🇵 '+escapeHTML(ja)+' · 🇨🇳 '+escapeHTML(zh)+'</span><button data-ko="'+escapeHTML(ko)+'" onclick="saveUnknown(this)">'+(book[ko]?'✓ 保存済み':'⭐ 生詞帳に追加')+'</button></div>'}).join("")+'<a href="./dictionary.html?view=unknown">📒 生詞帳を見る →</a></div>':""}
 function saveUnknown(btn){if(!window.topikBookToggle)return;const saved=topikBookToggle(btn.dataset.ko);btn.textContent=saved?"✓ 保存済み":"⭐ 生詞帳に追加"}
 const types=["穴埋め","活用","間違い探し","語順","韓日翻訳","日韓翻訳","文法の意味"];
+function sentenceWordNotes(sentence){const bank=window.TOPIK_LEXICON||[];const extra=[{ko:"저",ja:"私（謙譲）",zh:"我（谦称）"},{ko:"는",ja:"は（主題助詞）",zh:"主题助词"},{ko:"학생",ja:"学生",zh:"学生"},{ko:"입니다",ja:"です（格式体）",zh:"是（正式敬语）"}];const entries=[];for(const token of sentence.replace(/[.!?,。！？]/g," ").split(/\s+/).filter(Boolean)){const match=[...bank,...extra].filter(w=>token===w.ko||token.startsWith(w.ko)&&w.ko.length>=2).sort((a,b)=>b.ko.length-a.ko.length)[0];if(match&&!entries.some(w=>w.ko===match.ko))entries.push(match)}return entries.map(w=>[w.ko,w.ja,w.zh].join("|")).join(";")}
 function choicesFor(correct,distractors){return shuffle(unique([correct,...distractors.filter(x=>x!==correct)]).slice(0,4))}
 function makeQ(x,forced){
  const type=forced||types[Math.floor(Math.random()*types.length)],sp=special[x.id],other=shuffle(data.filter(v=>v.id!==x.id));
@@ -93,14 +94,14 @@ function makeQ(x,forced){
    prompt="【間違い探し】次の文の誤った表現を正しく直してください。\n"+sentence.replace(target,wrong[0]);
    correct=target;choices=shuffle([target,...wrong]);extraZh="错误形式："+wrong[0]+"；正确形式："+target+"。";extraJa="誤った形："+wrong[0]+"。正しい形："+target+"。";
  }else if(type==="語順"){
-   prompt="【語順】語句を正しい順番に並べましょう。\n🇯🇵 "+x.j;
+   prompt="【語順】語句を正しい順番に並べましょう。\n文法："+x.title;
    const clean=sentence.replace(/[.!?]$/,""),tokens=clean.split(/\s+/);
    if(tokens.length<2){kind="穴埋め";prompt="【穴埋め】空欄に入る形は？\n"+sentence.replace(target,"＿＿＿");correct=target;choices=shuffle([target,...wrong])}
    else {order=tokens;correct=clean;choices=[];extraZh="正确句子："+sentence+"。注意助词、词尾和句子顺序。";extraJa="正しい文："+sentence+"。助詞・語尾・語順を確認しましょう。"}
- }else if(type==="韓日翻訳"){prompt="【韓日翻訳】次の韓国語の意味は？\n"+x.ko;correct=x.j;choices=choicesFor(correct,other.map(v=>v.j))}
+ }else if(type==="韓日翻訳"){prompt="【韓日翻訳】次の韓国語の意味は？\n"+x.ko;correct=x.j;choices=choicesFor(correct,other.map(v=>v.j));extraZh="原句："+x.ko+"；中文："+x.zh+"。";extraJa="原文："+x.ko+"；日本語："+x.j+"。"}
  else if(type==="日韓翻訳"){prompt="【日韓翻訳】「"+x.j+"」に合う韓国語は？";correct=x.ko;choices=choicesFor(correct,other.map(v=>v.ko))}
  else {prompt="【文法の意味】「"+x.title+"」の意味は？";correct=x.ja;choices=choicesFor(correct,other.map(v=>v.ja))}
- return {x,kind,prompt,correct,choices,order,explanationZh,explanationJa,extraZh,extraJa,lexicon};
+ const notes=(type==="韓日翻訳"||type==="日韓翻訳")?sentenceWordNotes(x.ko):(type==="文法の意味"?"":lexicon);return {x,kind,prompt,correct,choices,order,explanationZh,explanationJa,extraZh,extraJa,lexicon:notes};
 }
 function startQuiz(n=20,id=null,wrong=false){let pool=id?[data[id-1]]:wrong?data.filter(x=>state.mistakes.includes(x.id)):data;if(!pool.length){alert("復習する間違いはありません。");return}quiz=Array.from({length:n},(_,i)=>makeQ(pool[Math.floor(Math.random()*pool.length)],types[i%types.length]));quiz=shuffle(quiz);pos=0;fromLesson=id;renderQ()}
 let selectedOrder=[];
