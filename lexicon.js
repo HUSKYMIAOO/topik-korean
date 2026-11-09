@@ -3,3 +3,6 @@ window.TOPIK_LEXICON=[{"ko":"사람","ja":"人","zh":"人","level":1,"cat":"人�
 window.TOPIK_BOOK_KEY="topik-unknown-v1";
 window.topikBookRead=function(){try{return JSON.parse(localStorage.getItem(window.TOPIK_BOOK_KEY)||"{}")}catch{return {}}};
 window.topikBookToggle=function(ko){const book=window.topikBookRead();if(book[ko])delete book[ko];else book[ko]=Date.now();localStorage.setItem(window.TOPIK_BOOK_KEY,JSON.stringify(book));return !!book[ko]};
+
+// One-time migration from the earlier grammar-only notebook.
+try{const old=JSON.parse(localStorage.getItem("topik-unknown-words-v1")||"[]");if(Array.isArray(old)&&old.length){const current=window.topikBookRead();let changed=false;for(const item of old){if(item&&item.ko&&!current[item.ko]){current[item.ko]=Date.parse(item.addedAt)||Date.now();changed=true;if(!window.TOPIK_LEXICON.some(w=>w.ko===item.ko))window.TOPIK_LEXICON.push({ko:item.ko,ja:item.ja||"",zh:item.zh||"",level:1,cat:"生詞帳"})}}if(changed)localStorage.setItem(window.TOPIK_BOOK_KEY,JSON.stringify(current))}}catch(e){}
