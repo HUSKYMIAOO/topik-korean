@@ -6,3 +6,5 @@ window.topikBookToggle=function(ko){const book=window.topikBookRead();if(book[ko
 
 // One-time migration from the earlier grammar-only notebook.
 try{const old=JSON.parse(localStorage.getItem("topik-unknown-words-v1")||"[]");if(Array.isArray(old)&&old.length){const current=window.topikBookRead();let changed=false;for(const item of old){if(item&&item.ko&&!current[item.ko]){current[item.ko]=Date.parse(item.addedAt)||Date.now();changed=true;if(!window.TOPIK_LEXICON.some(w=>w.ko===item.ko))window.TOPIK_LEXICON.push({ko:item.ko,ja:item.ja||"",zh:item.zh||"",cat:"生詞帳"})}}if(changed)localStorage.setItem(window.TOPIK_BOOK_KEY,JSON.stringify(current))}}catch(e){}
+
+try{const official=JSON.parse(localStorage.getItem("topik-official-beginner-v1")||"[]");if(Array.isArray(official)&&official.length===2545)window.TOPIK_LEXICON=official}catch(e){}
