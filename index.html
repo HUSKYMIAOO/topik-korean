@@ -63,6 +63,9 @@ const special={
 4:{base:"학생",right:"학생이",wrong:["학생가","학생은","학생를"],ruleZh:"학생 有收音，主格助词用 이；无收音用 가。은 是主题助词。",ruleJa:"학생 はパッチムがあるので主格助詞 이 を使います。パッチムがなければ 가。은 は主題の助詞です。",bad:"학생가",badFix:"학생이"},
 5:{base:"책",right:"책을",wrong:["책를","책은","책가"],ruleZh:"책 有收音，宾格助词用 을；没有收音用 를。",ruleJa:"책 はパッチムがあるので目的格助詞 을 を使います。パッチムがなければ 를。",bad:"책를",badFix:"책을"}
 };
+const exerciseBank=[[1,"저는 선생님이에요.","선생님이에요","선생님예요","선생님입니다","선생님이요","선생님|先生|老师"],[1,"제 동생은 의사예요.","의사예요","의사이에요","의사아요","의사어요","동생|弟・妹|弟弟妹妹;의사|医者|医生"],[2,"저는 회사원입니다.","회사원입니다","회사원입니까","회사원이에","회사원예요","회사원|会社員|公司职员"],[3,"오늘은 월요일이에요.","오늘은","오늘는","오늘이","오늘을","오늘|今日|今天;월요일|月曜日|星期一"],[3,"동생은 대학생이에요.","동생은","동생는","동생이","동생을","동생|弟・妹|弟弟妹妹;대학생|大学生|大学生"],[4,"고양이가 귀여워요.","고양이가","고양이이","고양이는","고양이를","고양이|猫|猫;귀엽다|かわいい|可爱"],[4,"비가 많이 와요.","비가","비이","비를","비은","비|雨|雨;많이|たくさん|很多"],[5,"사과를 먹어요.","사과를","사과을","사과가","사과는","사과|りんご|苹果;먹다|食べる|吃"],[5,"물을 마셔요.","물을","물를","물이","물은","물|水|水;마시다|飲む|喝"],[6,"내일 병원에 가요.","병원에","병원에서","병원을","병원과","내일|明日|明天;병원|病院|医院"],[7,"도서관에서 공부해요.","도서관에서","도서관에","도서관을","도서관이","도서관|図書館|图书馆;공부하다|勉強する|学习"],[8,"가방에 책이 있어요.","있어요","없어요","있었어요","있습니다","가방|かばん|包;책|本|书"],[9,"오늘은 시간이 없어요.","없어요","있어요","없었어요","없습니다","시간|時間|时间;오늘|今日|今天"],[10,"저녁에 책을 읽어요.","읽어요","읽아요","읽고","읽었어요","저녁|夕方・夜|晚上;책|本|书"],[11,"매일 운동해요.","운동해요","운동하요","운동어요","운동했어요","매일|毎日|每天;운동하다|運動する|运动"],[12,"저는 커피를 안 마셔요.","안 마셔요","마셔요","마셨어요","마실 거예요","커피|コーヒー|咖啡;마시다|飲む|喝"],[13,"저는 고기를 먹지 않아요.","먹지 않아요","먹지 아요","먹지 않해요","먹지 않다요","고기|肉|肉;먹다|食べる|吃"],[14,"어제 영화를 봤어요.","봤어요","보았아요","봐요","볼 거예요","어제|昨日|昨天;영화|映画|电影"],[15,"주말에 여행을 갈 거예요.","갈 거예요","가을 거예요","갔 거예요","가 거예요","주말|週末|周末;여행|旅行|旅行"],[16,"저는 한국 음식을 먹고 싶어요.","먹고 싶어요","먹어 싶어요","먹고 싶어","먹지 싶어요","음식|食べ物・料理|食物;한국|韓国|韩国"],[17,"여기에 앉으세요.","앉으세요","앉세요","앉아세요","앉으아요","여기|ここ|这里;앉다|座る|坐"],[18,"문을 열어 주세요.","열어 주세요","열으 주세요","열고 주세요","열어 주어요요","문|ドア|门;열다|開ける|打开"],[19,"저는 수영할 수 있어요.","할 수 있어요","하 수 있어요","할 수 있어","할 수 해요","수영하다|泳ぐ|游泳"],[20,"아침을 먹고 학교에 가요.","먹고","먹지만","먹으면","먹으러","아침|朝食|早餐;학교|学校|学校"],[21,"이 옷은 비싸지만 예뻐요.","비싸지만","비싸고","비싸면","비싸서","옷|服|衣服;비싸다|高い|贵;예쁘다|きれい|漂亮"],[22,"피곤해서 일찍 자요.","피곤해서","피곤하지만","피곤하면","피곤하고","피곤하다|疲れている|疲劳;일찍|早く|早"],[23,"늦었으니까 택시를 타요.","늦었으니까","늦었지만","늦었으면","늦었고","늦다|遅い|迟;택시|タクシー|出租车"],[24,"비가 오면 집에 있어요.","오면","오지만","오고","와서","비|雨|雨;집|家|家"],[25,"자기 전에 이를 닦아요.","자기 전에","자고 전에","자는 전에","잤기 전에","자다|寝る|睡觉;이|歯|牙齿;닦다|磨く|刷"],[26,"숙제를 끝낸 후에 쉬어요.","끝낸 후에","끝내 후에","끝내는 후에","끝낼 후에","숙제|宿題|作业;끝내다|終える|完成;쉬다|休む|休息"],[27,"아홉 시부터 다섯 시까지 일해요.","시부터","시에서","시보다","시하고","아홉|九|九;다섯|五|五;일하다|働く|工作"],[28,"엄마하고 시장에 가요.","엄마하고","엄마보다","엄마에서","엄마까지","엄마|お母さん|妈妈;시장|市場|市场"],[29,"버스보다 지하철이 빨라요.","버스보다","버스부터","버스하고","버스까지","버스|バス|公交车;지하철|地下鉄|地铁;빠르다|速い|快"],[30,"여기에서 사진을 찍어도 돼요.","찍어도 돼요","찍으면 안 돼요","찍어야 해요","찍고 있어요","사진|写真|照片;찍다|撮る|拍摄"],[31,"여기에서 담배를 피우면 안 돼요.","피우면 안 돼요","피워도 돼요","피우고 싶어요","피우러 가요","담배|たばこ|香烟;피우다|吸う|吸"],[32,"내일 일찍 일어나야 해요.","일어나야 해요","일어나도 돼요","일어나고 싶어요","일어나고 있어요","내일|明日|明天;일찍|早く|早;일어나다|起きる|起床"],[33,"저는 음악 듣는 것을 좋아해요.","듣는 것을","듣을 것을","듣고 것을","듣기 것을","음악|音楽|音乐;듣다|聴く|听;좋아하다|好きだ|喜欢"],[34,"지금 점심을 먹고 있어요.","먹고 있어요","먹어 있어요","먹고 싶어요","먹을 거예요","지금|今|现在;점심|昼食|午饭"],[35,"친구를 만나러 가요.","만나러 가요","만나으러 가요","만나고 가요","만나서 가요","친구|友達|朋友;만나다|会う|见面"],[36,"주말에는 책을 읽거나 산책해요.","읽거나","읽으거나","읽어서","읽으면서","주말|週末|周末;산책하다|散歩する|散步"],[37,"시간이 없을 때 택시를 타요.","없을 때","없은 때","없는 때","없었 때","시간|時間|时间;택시|タクシー|出租车"],[38,"저 사람이 제가 아는 선생님이에요.","아는","알는","알은","알을","사람|人|人;알다|知る|知道;선생님|先生|老师"],[39,"이 음식이 정말 맛있네요.","맛있네요","맛있으네요","맛있고요","맛있을네요","음식|料理|食物;정말|本当に|真的;맛있다|おいしい|好吃"],[40,"내일 날씨가 춥겠어요.","춥겠어요","춥을겠어요","추워겠어요","춥겠아요","내일|明日|明天;날씨|天気|天气;춥다|寒い|冷"]];
+function exerciseFor(id){const list=exerciseBank.filter(v=>v[0]===id);return list[Math.floor(Math.random()*list.length)]}
+function wordNotes(q){const items=(q.lexicon||"").split(";").filter(Boolean).map(v=>v.split("|"));return items.length?'<div style="margin-top:12px;border-top:1px solid #cbd0e4;padding-top:10px"><b>📖 新出単語 / 生词</b>'+items.map(v=>'<p style="margin:5px 0"><b>'+escapeHTML(v[0])+'</b> · 🇯🇵 '+escapeHTML(v[1]||"")+' · 🇨🇳 '+escapeHTML(v[2]||"")+'</p>').join("")+'</div>':""}
 const types=["穴埋め","活用","間違い探し","語順","韓日翻訳","日韓翻訳","文法の意味"];
 function choicesFor(correct,distractors){return shuffle(unique([correct,...distractors.filter(x=>x!==correct)]).slice(0,4))}
 function makeQ(x,forced){
@@ -71,43 +74,28 @@ function makeQ(x,forced){
  const explanationJa=sp?sp.ruleJa:"この問題は「"+x.title+"」（"+x.ja+"）の使い方を確認します。ルール："+x.rule+"。例文："+x.ko+"（"+x.j+"）";
  let prompt="",correct="",choices=[],order=null,kind=type,extraZh="",extraJa="";
  const match=x.words.find(w=>x.ko.includes(w))||x.ko.replace(/[.!?]$/,"").split(" ").slice(-1)[0];
+ const entry=exerciseFor(x.id),sentence=entry[1],target=entry[2],wrong=entry.slice(3,6),lexicon=entry[6];
  if(type==="穴埋め"){
-  const blank=x.ko.replace(match,"＿＿＿");
-  prompt="【穴埋め】空欄に入る正しい表現は？\n"+blank;
-  correct=match;
-  choices=choicesFor(correct,sp&&x.ko.includes(sp.right)?sp.wrong:other.flatMap(v=>v.words).filter(w=>w!==match));
-  if(choices.length<4)choices=choicesFor(correct,other.map(v=>v.ko));
+   prompt="【穴埋め】文脈に合う形を選んでください。\\n"+sentence.replace(target,"＿＿＿")+"\\n🇯🇵 "+x.ja+" ／ "+x.title;
+   correct=target;choices=shuffle([target,...wrong]);extraZh="完整例句："+sentence;extraJa="完成文："+sentence;
  }else if(type==="活用"){
-  prompt="【活用】「"+x.title+"」の正しい形を選びましょう。\n"+(sp?sp.base+" ＋ "+x.ja:x.ja+" ／ "+x.rule);
-  correct=sp?sp.right:x.words[0];
-  choices=choicesFor(correct,sp?sp.wrong:other.flatMap(v=>v.words));
-  extraZh="目标是选择符合本课语法的形式，不是任意语境下都正确的表达。";
-  extraJa="この文法に合う形を選びます。他の文脈で使える表現もあります。";
+   prompt="【活用】次の文を完成させる正しい形は？\\n"+sentence.replace(target,"＿＿＿")+"\\n文法："+x.title;
+   correct=target;choices=shuffle([target,...wrong]);extraZh="完整例句："+sentence;extraJa="完成文："+sentence;
  }else if(type==="間違い探し"){
-  if(sp){
-   prompt="【間違い探し】「"+x.title+"」のルールに合わない表現は？";
-   correct=sp.bad;
-   choices=shuffle([correct,sp.right,...x.words.filter(w=>w!==sp.right&&w!==correct).slice(0,2)]);
-   while(choices.length<4){const z=other.flatMap(v=>v.words).find(w=>!choices.includes(w));if(!z)break;choices.push(z)}
-   extraZh="错误写法："+sp.bad+" → 正确写法："+sp.badFix+"。";
-   extraJa="誤り："+sp.bad+" → 正しい形："+sp.badFix+"。";
-  }else{
-   prompt="【間違い探し】次のうち「"+x.title+"」の学習例に含まれない表現は？";
-   correct=other.flatMap(v=>v.words).find(w=>!x.words.includes(w))||other[0].ko;
-   choices=shuffle([...x.words.slice(0,3),correct]);
-   if(choices.length<4){kind="文法の意味";prompt="【文法の意味】「"+x.title+"」の意味は？";correct=x.ja;choices=choicesFor(correct,other.map(v=>v.ja))}
-   extraZh="这是辨认本课表达的题目，并不表示其他语法表达本身有错误。";
-   extraJa="この問題は学習した表現を見分ける練習です。他の表現自体が文法的に誤りという意味ではありません。";
-  }
+   prompt="【間違い探し】次の文の空欄に入れると文法的に誤る形は？\\n"+sentence.replace(target,"＿＿＿");
+   correct=wrong[0];choices=shuffle([wrong[0],target,...wrong.slice(1)]); 
+   // Multiple incorrect options would make this ambiguous: instead test one explicit malformed sentence.
+   prompt="【間違い探し】次の文の誤った表現を正しく直してください。\\n"+sentence.replace(target,wrong[0]);
+   correct=target;choices=shuffle([target,...wrong]);extraZh="错误形式："+wrong[0]+"；正确形式："+target+"。";extraJa="誤った形："+wrong[0]+"。正しい形："+target+"。";
  }else if(type==="語順"){
-  prompt="【語順】語句を正しい順番に並べましょう。\n🇯🇵 "+x.j;
-  const clean=x.ko.replace(/[.!?]$/,""),tokens=clean.split(/\s+/);
-  if(tokens.length<2){kind="韓日翻訳";prompt="【韓日翻訳】次の韓国語の意味は？\n"+x.ko;correct=x.j;choices=choicesFor(correct,other.map(v=>v.j))}
-  else {order=tokens;correct=clean;choices=[];extraZh="韩语通常按照主语、宾语、谓语的顺序组织句子，注意助词和句尾。";extraJa="韓国語は基本的に主語・目的語・述語の順です。助詞と文末の形にも注意しましょう。"}
+   prompt="【語順】語句を正しい順番に並べましょう。\\n🇯🇵 "+x.j;
+   const clean=sentence.replace(/[.!?]$/,""),tokens=clean.split(/\\s+/);
+   if(tokens.length<2){kind="穴埋め";prompt="【穴埋め】空欄に入る形は？\\n"+sentence.replace(target,"＿＿＿");correct=target;choices=shuffle([target,...wrong])}
+   else {order=tokens;correct=clean;choices=[];extraZh="正确句子："+sentence+"。注意助词、词尾和句子顺序。";extraJa="正しい文："+sentence+"。助詞・語尾・語順を確認しましょう。"}
  }else if(type==="韓日翻訳"){prompt="【韓日翻訳】次の韓国語の意味は？\n"+x.ko;correct=x.j;choices=choicesFor(correct,other.map(v=>v.j))}
  else if(type==="日韓翻訳"){prompt="【日韓翻訳】「"+x.j+"」に合う韓国語は？";correct=x.ko;choices=choicesFor(correct,other.map(v=>v.ko))}
  else {prompt="【文法の意味】「"+x.title+"」の意味は？";correct=x.ja;choices=choicesFor(correct,other.map(v=>v.ja))}
- return {x,kind,prompt,correct,choices,order,explanationZh,explanationJa,extraZh,extraJa};
+ return {x,kind,prompt,correct,choices,order,explanationZh,explanationJa,extraZh,extraJa,lexicon};
 }
 function startQuiz(n=20,id=null,wrong=false){let pool=id?[data[id-1]]:wrong?data.filter(x=>state.mistakes.includes(x.id)):data;if(!pool.length){alert("復習する間違いはありません。");return}quiz=Array.from({length:n},(_,i)=>makeQ(pool[Math.floor(Math.random()*pool.length)],types[i%types.length]));quiz=shuffle(quiz);pos=0;fromLesson=id;renderQ()}
 let selectedOrder=[];
@@ -116,7 +104,7 @@ function pickWord(i){if(answered||selectedOrder.includes(i))return;selectedOrder
 function updateOrder(){let q=quiz[pos];document.querySelector("#builtOrder").textContent=selectedOrder.length?selectedOrder.map(i=>q.order[i]).join(" "):"（ここに文を作成）";document.querySelectorAll("#wordBank button").forEach(b=>{b.disabled=selectedOrder.includes(Number(b.dataset.word))})}
 function answerOrder(){if(answered)return;if(selectedOrder.length!==quiz[pos].order.length){alert("すべての語句を選んでください。");return}finishAnswer(selectedOrder.map(i=>quiz[pos].order[i]).join(" "))}
 function answer(i){if(answered)return;finishAnswer(quiz[pos].choices[i],i)}
-function finishAnswer(given,choiceIndex){if(answered)return;answered=true;let q=quiz[pos],ok=given===q.correct;state.attempts++;if(ok)state.correct++;else if(!state.mistakes.includes(q.x.id))state.mistakes.push(q.x.id);if(ok)state.mistakes=state.mistakes.filter(id=>id!==q.x.id);save();document.querySelectorAll(".answer").forEach((b,j)=>{b.disabled=true;if(q.choices[j]===q.correct)b.classList.add("correct");else if(j===choiceIndex)b.classList.add("wrong")});document.querySelectorAll("#wordBank button").forEach(b=>b.disabled=true);const detailZh=ok?"回答正确！"+q.explanationZh:"你选择了「"+given+"」，正确答案是「"+q.correct+"」。"+q.explanationZh;const detailJa=ok?"正解です！"+q.explanationJa:"選んだ答えは「"+given+"」、正解は「"+q.correct+"」です。"+q.explanationJa;$("#feedback").innerHTML='<div class="rule" style="margin-top:14px;background:'+(ok?"#e6f7ed":"#fff0e8")+'"><h3>'+(ok?"✅ 正解！":"❌ 不正解")+'</h3><p><b>正解：</b>'+escapeHTML(q.correct)+'</p><p><b>🇨🇳 中文解析</b><br>'+escapeHTML(detailZh+" "+q.extraZh)+'</p><p><b>🇯🇵 日本語解説</b><br>'+escapeHTML(detailJa+" "+q.extraJa)+'</p></div><div class="sp"></div><button class="primary" onclick="pos++;renderQ()">次の問題 →</button>'}
+function finishAnswer(given,choiceIndex){if(answered)return;answered=true;let q=quiz[pos],ok=given===q.correct;state.attempts++;if(ok)state.correct++;else if(!state.mistakes.includes(q.x.id))state.mistakes.push(q.x.id);if(ok)state.mistakes=state.mistakes.filter(id=>id!==q.x.id);save();document.querySelectorAll(".answer").forEach((b,j)=>{b.disabled=true;if(q.choices[j]===q.correct)b.classList.add("correct");else if(j===choiceIndex)b.classList.add("wrong")});document.querySelectorAll("#wordBank button").forEach(b=>b.disabled=true);const detailZh=ok?"回答正确！"+q.explanationZh:"你选择了「"+given+"」，正确答案是「"+q.correct+"」。"+q.explanationZh;const detailJa=ok?"正解です！"+q.explanationJa:"選んだ答えは「"+given+"」、正解は「"+q.correct+"」です。"+q.explanationJa;$("#feedback").innerHTML='<div class="rule" style="margin-top:14px;background:'+(ok?"#e6f7ed":"#fff0e8")+'"><h3>'+(ok?"✅ 正解！":"❌ 不正解")+'</h3><p><b>正解：</b>'+escapeHTML(q.correct)+'</p><p><b>🇨🇳 中文解析</b><br>'+escapeHTML(detailZh+" "+q.extraZh)+'</p><p><b>🇯🇵 日本語解説</b><br>'+escapeHTML(detailJa+" "+q.extraJa)+'</p>'+wordNotes(q)+'</div><div class="sp"></div><button class="primary" onclick="pos++;renderQ()">次の問題 →</button>'}
 function stats(){shell('<div class="card"><h2>📊 学習記録</h2><p>学習済み：<b>'+state.done.length+'/'+data.length+'</b></p><p>回答数：<b>'+state.attempts+'</b></p><p>正答率：<b>'+(state.attempts?Math.round(state.correct/state.attempts*100):0)+'%</b></p><p>復習対象：<b>'+state.mistakes.length+'</b></p><div class="row"><button onclick="startQuiz(20,null,true)">❌ 間違いを復習</button><button onclick="exportData()">📤 記録を保存</button></div></div><div class="card"><h3>データ管理</h3><p class="muted">記録はこのブラウザ内に保存されます。Safariのデータ削除で消える場合があります。</p><input type="file" accept="application/json" onchange="importData(event)"><div class="sp"></div><button onclick="if(confirm(\x27記録を消去しますか？\x27)){localStorage.removeItem(\x27topik-progress\x27);location.reload()}">記録をリセット</button></div>')}
 function exportData(){let a=document.createElement("a"),b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});a.href=URL.createObjectURL(b);a.download="topik-progress.json";a.click();URL.revokeObjectURL(a.href)}
 function importData(e){let f=e.target.files[0];if(!f)return;f.text().then(t=>{try{let o=JSON.parse(t);if(!Array.isArray(o.done)||!Array.isArray(o.mistakes))throw Error();state=o;save();stats()}catch{alert("読み込めませんでした")}})}
