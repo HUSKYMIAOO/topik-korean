@@ -112,19 +112,69 @@ const extraContexts={
 const fullExerciseBank=[...exerciseBank,...Object.entries(extraContexts).flatMap(([id,rows])=>rows.map(r=>[Number(id),...r]))];
 function lessonCount(id){const size=fullExerciseBank.filter(r=>r[0]===id).length;return Math.min(14,Math.max(4,size*3+(id>=20?2:0)))}
 function contextualExplanation(q){const sentence=q.sentence||q.x.ko;const comp=comparisonRules[q.x.id];const base="「"+q.x.title+"」："+q.x.rule;return {zh:"题目原句："+sentence+"。正确答案："+q.correct+"。语法规则："+base+"。"+(q.kind==="文法比較"&&comp?comp[2]:"请根据实际句子的语境判断。"),ja:"問題文："+sentence+"。正解："+q.correct+"。文法ルール："+base+"。"+(q.kind==="文法比較"&&comp?comp[1]:"文脈と語尾・助詞の形を確認しましょう。")}}
-function exerciseFor(id){const list=fullExerciseBank.filter(v=>v[0]===id);return list[Math.floor(Math.random()*list.length)]}
+
+const curatedPairs=[
+[1,"저는 학생이에요.","학생이에요","학생예요","학생아요","학생어요","학생|学生|学生"],
+[2,"저는 한국 사람입니다.","사람입니다","사람입니까","사람이에요","사람예요","사람|人|人;한국|韓国|韩国"],
+[3,"주말에는 시간이 많아요.","주말에는","주말에은","주말이가","주말을","주말|週末|周末;시간|時間|时间"],
+[4,"친구가 집에 있어요.","친구가","친구이","친구를","친구은","친구|友達|朋友;집|家|家"],
+[5,"한국어를 배워요.","한국어를","한국어을","한국어가","한국어는","한국어|韓国語|韩语;배우다|習う|学习"],
+[6,"아홉 시에 만나요.","시에","시에서","시를","시가","아홉|九|九;만나다|会う|见面"],
+[7,"식당에서 밥을 먹어요.","식당에서","식당에","식당을","식당이","식당|食堂|餐厅;밥|ご飯|饭"],
+[8,"교실에 학생이 있어요.","있어요","없어요","있었어요","있습니다","교실|教室|教室;학생|学生|学生"],
+[9,"냉장고에 우유가 없어요.","없어요","있어요","없었어요","없습니다","냉장고|冷蔵庫|冰箱;우유|牛乳|牛奶"],
+[10,"친구에게 편지를 써요.","써요","쓰어요","썼어요","쓰고","친구|友達|朋友;편지|手紙|信"],
+[11,"오늘은 집에서 쉬어요.","쉬어요","쉬아요","쉬었어요","쉬고","오늘|今日|今天;집|家|家"],
+[12,"저는 아침을 안 먹어요.","안 먹어요","먹어요","먹었어요","먹을 거예요","아침|朝食|早餐;먹다|食べる|吃"],
+[13,"동생은 운동하지 않아요.","운동하지 않아요","운동지 않아요","운동하지 안아요","운동지 않해요","동생|弟・妹|弟弟妹妹;운동하다|運動する|运动"],
+[14,"지난주에 여행했어요.","여행했어요","여행해요","여행할 거예요","여행하고","지난주|先週|上周;여행하다|旅行する|旅行"],
+[15,"내년에 한국에 갈 거예요.","갈 거예요","가을 거예요","갔 거예요","가 거예요","내년|来年|明年;한국|韓国|韩国"],
+[16,"새 신발을 사고 싶어요.","사고 싶어요","사아 싶어요","사고 싶어","사지 싶어요","신발|靴|鞋;사다|買う|买"],
+[17,"천천히 말씀하세요.","말씀하세요","말씀으세요","말씀아세요","말씀해세요","천천히|ゆっくり|慢慢地;말씀하다|おっしゃる|说"],
+[18,"주소를 알려 주세요.","알려 주세요","알리어 주세요","알려 주어요요","알리고 주세요","주소|住所|地址;알리다|知らせる|告知"],
+[19,"한국어를 읽을 수 있어요.","읽을 수 있어요","읽 수 있어요","읽어 수 있어요","읽을 수 해요","한국어|韓国語|韩语;읽다|読む|读"],
+[20,"손을 씻고 밥을 먹어요.","씻고","씻지만","씻으면","씻으러","손|手|手;씻다|洗う|洗"],
+[21,"비가 오지만 산책해요.","오지만","오고","오면","와서","비|雨|雨;산책하다|散歩する|散步"],
+[22,"추워서 창문을 닫아요.","추워서","춥지만","추우면","춥고","춥다|寒い|冷;창문|窓|窗户"],
+[23,"위험하니까 조심하세요.","위험하니까","위험하면","위험하지만","위험하고","위험하다|危険だ|危险;조심하다|気をつける|小心"],
+[24,"날씨가 좋으면 공원에 가요.","좋으면","좋지만","좋고","좋아서","날씨|天気|天气;공원|公園|公园"],
+[25,"밥을 먹기 전에 손을 씻어요.","먹기 전에","먹고 전에","먹는 전에","먹었기 전에","밥|ご飯|饭;손|手|手"],
+[26,"수업이 끝난 후에 친구를 만나요.","끝난 후에","끝나 후에","끝나는 후에","끝날 후에","수업|授業|课程;친구|友達|朋友"],
+[27,"월요일부터 금요일까지 공부해요.","월요일부터","월요일에서","월요일보다","월요일하고","월요일|月曜日|星期一;금요일|金曜日|星期五"],
+[28,"친구하고 영화를 봐요.","친구하고","친구보다","친구에서","친구까지","친구|友達|朋友;영화|映画|电影"],
+[29,"겨울보다 봄이 따뜻해요.","겨울보다","겨울부터","겨울하고","겨울까지","겨울|冬|冬天;봄|春|春天"],
+[30,"이 책을 읽어도 돼요.","읽어도 돼요","읽으면 안 돼요","읽어야 해요","읽고 있어요","책|本|书;읽다|読む|读"],
+[31,"여기에서 뛰면 안 돼요.","뛰면 안 돼요","뛰어도 돼요","뛰고 싶어요","뛰고 있어요","여기|ここ|这里;뛰다|走る|跑"],
+[32,"약을 먹어야 해요.","먹어야 해요","먹어도 돼요","먹고 싶어요","먹고 있어요","약|薬|药;먹다|飲む|服用"],
+[33,"책 읽는 것을 좋아해요.","읽는 것을","읽을 것을","읽고 것을","읽기 것을","책|本|书;읽다|読む|读"],
+[34,"지금 버스를 기다리고 있어요.","기다리고 있어요","기다려 있어요","기다리고 싶어요","기다릴 거예요","지금|今|现在;버스|バス|公交车"],
+[35,"책을 빌리러 도서관에 가요.","빌리러","빌리으러","빌리고","빌려서","책|本|书;도서관|図書館|图书馆"],
+[36,"쉬는 날에는 음악을 듣거나 책을 읽어요.","듣거나","듣으거나","들어서","들으면서","음악|音楽|音乐;책|本|书"],
+[37,"배가 고플 때 밥을 먹어요.","고플 때","고픈 때","고프는 때","고팠 때","배|お腹|肚子;밥|ご飯|饭"],
+[38,"저는 한국어를 가르치는 사람을 알아요.","가르치는","가르치은","가르칠는","가르친는","한국어|韓国語|韩语;사람|人|人"],
+[39,"경치가 정말 아름답네요.","아름답네요","아름답으네요","아름답고요","아름다울네요","경치|景色|风景;정말|本当に|真的"],
+[40,"비가 오겠어요.","오겠어요","오을겠어요","와겠어요","오겠아요","비|雨|雨;오다|降る|下"]
+];
+const curatedBank=[...fullExerciseBank,...curatedPairs];
+const validRow=r=>r.length===7&&r[1].includes(r[2])&&r.slice(2,6).every(v=>typeof v==="string"&&v.length>0)&&new Set(r.slice(2,6)).size===4;
+const bankFor=id=>curatedBank.filter(r=>r[0]===id&&validRow(r));
+const grammarFamily=id=>id<=9?"particles":id<=19?"forms":id<=29?"connections":"advanced";
+function lessonCount(id){const count=bankFor(id).length;return Math.min(15,Math.max(3,count*2+(id>=20?2:0)))}
+function questionPlan(id){const rows=shuffle(bankFor(id));const n=lessonCount(id);const safeTypes=["穴埋め","活用","間違い探し","文法比較"];const planned=[];for(const row of rows){planned.push({row,type:safeTypes[planned.length%safeTypes.length]});if(planned.length>=n)break}for(let j=planned.length;j<n;j++){const row=rows[j%rows.length];planned.push({row,type:safeTypes[(j+Math.floor(j/rows.length))%safeTypes.length]})}return shuffle(planned)}
+function bilingualExplanation(q){const sent=q.sentence||q.x.ko;const base=q.x.rule;const compare=comparisonRules[q.x.id];const different=q.choices.filter(c=>c!==q.correct);const contrast=q.kind==="文法比較"&&compare?"\n"+compare[2]:"";const contrastJa=q.kind==="文法比較"&&compare?"\n"+compare[1]:"";return {zh:"原句："+sent+"\n正确答案："+q.correct+"\n规则："+base+"。"+contrast+"\n其他选项："+different.join(" / ")+"。注意：部分选项在不同语境下可能成立，请结合题目所考查的语法形式。",ja:"完成文："+sent+"\n正解："+q.correct+"\nルール："+base+"。"+contrastJa+"\nほかの選択肢："+different.join(" / ")+"。文脈によって成立する形もあるため、問われている文法を確認しましょう。"}}
+function exerciseFor(id){const list=bankFor(id);return list[Math.floor(Math.random()*list.length)]}
 function wordNotes(q){const bank=window.TOPIK_LEXICON||[];const book=window.topikBookRead?topikBookRead():{};const entries=(q.lexicon||"").split(";").filter(Boolean).map(v=>v.split("|"));return entries.length?'<div style="margin-top:12px;border-top:1px solid #cbd0e4;padding-top:10px"><b>📖 新出単語 / 生词</b>'+entries.map(([ko,ja,zh])=>{return '<div class="row" style="justify-content:space-between;border-top:1px solid #ddd;padding:9px 0"><span><b>'+escapeHTML(ko)+'</b><br>🇯🇵 '+escapeHTML(ja)+' · 🇨🇳 '+escapeHTML(zh)+'</span><button data-ko="'+escapeHTML(ko)+'" onclick="saveUnknown(this)">'+(book[ko]?'✓ 保存済み':'⭐ 生詞帳に追加')+'</button></div>'}).join("")+'<a href="./dictionary.html?view=unknown">📒 生詞帳を見る →</a></div>':""}
 function saveUnknown(btn){if(!window.topikBookToggle)return;const saved=topikBookToggle(btn.dataset.ko);btn.textContent=saved?"✓ 保存済み":"⭐ 生詞帳に追加"}
 const types=["穴埋め","活用","間違い探し","語順","韓日翻訳","日韓翻訳","文法の意味","文法比較"];
 function sentenceWordNotes(sentence){const bank=window.TOPIK_LEXICON||[];const extra=[{ko:"저",ja:"私（謙譲）",zh:"我（谦称）"},{ko:"는",ja:"は（主題助詞）",zh:"主题助词"},{ko:"학생",ja:"学生",zh:"学生"},{ko:"입니다",ja:"です（格式体）",zh:"是（正式敬语）"}];const entries=[];for(const token of sentence.replace(/[.!?,。！？]/g," ").split(/\s+/).filter(Boolean)){const match=[...bank,...extra].filter(w=>token===w.ko||token.startsWith(w.ko)&&w.ko.length>=2).sort((a,b)=>b.ko.length-a.ko.length)[0];if(match&&!entries.some(w=>w.ko===match.ko))entries.push(match)}return entries.map(w=>[w.ko,w.ja,w.zh].join("|")).join(";")}
 function choicesFor(correct,distractors){return shuffle(unique([correct,...distractors.filter(x=>x!==correct)]).slice(0,4))}
-function makeQ(x,forced){
+function makeQ(x,forced,selectedRow){
  const type=forced||types[Math.floor(Math.random()*types.length)],sp=special[x.id],other=shuffle(data.filter(v=>v.id!==x.id));
  const explanationZh=sp?sp.ruleZh:"本题考查「"+x.title+"」（"+x.ja+"）。规则："+x.rule+"。例句："+x.ko+"（"+x.zh+"）";
  const explanationJa=sp?sp.ruleJa:"この問題は「"+x.title+"」（"+x.ja+"）の使い方を確認します。ルール："+x.rule+"。例文："+x.ko+"（"+x.j+"）";
  let prompt="",correct="",choices=[],order=null,kind=type,extraZh="",extraJa="";
  const match=x.words.find(w=>x.ko.includes(w))||x.ko.replace(/[.!?]$/,"").split(" ").slice(-1)[0];
- const entry=exerciseFor(x.id),sentence=entry[1],target=entry[2],wrong=entry.slice(3,6),lexicon=entry[6];
+ const entry=selectedRow||exerciseFor(x.id),sentence=entry[1],target=entry[2],wrong=entry.slice(3,6),lexicon=entry[6];
  if(type==="穴埋め"){
    prompt="【穴埋め】文脈に合う形を選んでください。\n"+sentence.replace(target,"＿＿＿")+"\n🇯🇵 "+x.ja+" ／ "+x.title;
    correct=target;choices=shuffle([target,...wrong]);extraZh="完整例句："+sentence;extraJa="完成文："+sentence;
@@ -144,14 +194,14 @@ function makeQ(x,forced){
  else {prompt="【文法の意味】「"+x.title+"」の意味は？";correct=x.ja;choices=choicesFor(correct,other.map(v=>v.ja))}
  const notes=(type==="韓日翻訳"||type==="日韓翻訳")?sentenceWordNotes(x.ko):(type==="文法の意味"?"":lexicon);return {x,kind,prompt,correct,choices,order,explanationZh,explanationJa,extraZh,extraJa,lexicon:notes,sentence:(type==="韓日翻訳"||type==="日韓翻訳")?x.ko:sentence};
 }
-function startQuiz(n=20,id=null,wrong=false){if(id!==null)n=lessonCount(id);let pool=id?[data[id-1]]:wrong?data.filter(x=>state.mistakes.includes(x.id)):data;if(!pool.length){alert("復習する間違いはありません。");return}quiz=Array.from({length:n},(_,i)=>makeQ(pool[Math.floor(Math.random()*pool.length)],types[i%types.length]));quiz=shuffle(quiz);pos=0;fromLesson=id;renderQ()}
+function startQuiz(n=20,id=null,wrong=false){if(id!==null)n=lessonCount(id);let pool=id?[data[id-1]]:wrong?data.filter(x=>state.mistakes.includes(x.id)):data;if(!pool.length){alert("復習する間違いはありません。");return}quiz=id!==null?questionPlan(id).map(item=>makeQ(data[id-1],item.type,item.row)):Array.from({length:n},(_,i)=>makeQ(pool[Math.floor(Math.random()*pool.length)],types[i%types.length]));quiz=shuffle(quiz);pos=0;fromLesson=id;renderQ()}
 let selectedOrder=[];
 function renderQ(){answered=false;selectedOrder=[];if(pos>=quiz.length){shell('<div class="card"><h2>🎉 お疲れさまでした！</h2><p>今回の練習が終わりました。</p><div class="row"><button class="primary" onclick="startQuiz('+quiz.length+','+fromLesson+')">🔁 もう一度</button><button onclick="setup()">別の練習</button></div></div>');return}let q=quiz[pos];let options=q.order?'<p class="muted">単語を順番にタップしてください。</p><div class="rule" id="builtOrder" style="min-height:48px">（ここに文を作成）</div><div class="row" id="wordBank">'+shuffle(q.order.map((w,i)=>({w,i}))).map(o=>'<button data-word="'+o.i+'" onclick="pickWord('+o.i+')">'+escapeHTML(o.w)+'</button>').join("")+'</div><div class="row" style="margin-top:12px"><button onclick="selectedOrder=[];updateOrder()">↺ やり直す</button><button class="primary" onclick="answerOrder()">回答する</button></div>':'<div id="options">'+q.choices.map((c,i)=>'<button class="answer" onclick="answer('+i+')">'+String.fromCharCode(65+i)+'. '+escapeHTML(c)+'</button>').join("")+'</div>';shell('<div class="card"><p class="muted">問題 '+(pos+1)+' / '+quiz.length+' · '+escapeHTML(q.kind)+'</p><h2 style="white-space:pre-line">'+escapeHTML(q.prompt)+'</h2><div class="row">'+translatorLink(q.x.ko,"google","🔊 Google 翻訳 ↗")+translatorLink(q.x.ko,"papago","🔊 Papago ↗")+'</div><div class="sp"></div>'+options+'<div id="feedback"></div></div>')}
 function pickWord(i){if(answered||selectedOrder.includes(i))return;selectedOrder.push(i);updateOrder()}
 function updateOrder(){let q=quiz[pos];document.querySelector("#builtOrder").textContent=selectedOrder.length?selectedOrder.map(i=>q.order[i]).join(" "):"（ここに文を作成）";document.querySelectorAll("#wordBank button").forEach(b=>{b.disabled=selectedOrder.includes(Number(b.dataset.word))})}
 function answerOrder(){if(answered)return;if(selectedOrder.length!==quiz[pos].order.length){alert("すべての語句を選んでください。");return}finishAnswer(selectedOrder.map(i=>quiz[pos].order[i]).join(" "))}
 function answer(i){if(answered)return;finishAnswer(quiz[pos].choices[i],i)}
-function finishAnswer(given,choiceIndex){if(answered)return;answered=true;let q=quiz[pos],ok=given===q.correct;state.attempts++;if(ok)state.correct++;else if(!state.mistakes.includes(q.x.id))state.mistakes.push(q.x.id);if(ok)state.mistakes=state.mistakes.filter(id=>id!==q.x.id);save();document.querySelectorAll(".answer").forEach((b,j)=>{b.disabled=true;if(q.choices[j]===q.correct)b.classList.add("correct");else if(j===choiceIndex)b.classList.add("wrong")});document.querySelectorAll("#wordBank button").forEach(b=>b.disabled=true);const context=contextualExplanation(q);const detailZh=(ok?"回答正确！":"你选择了「"+given+"」。")+context.zh;const detailJa=(ok?"正解です！":"選んだ答えは「"+given+"」です。")+context.ja;$("#feedback").innerHTML='<div class="rule" style="margin-top:14px;background:'+(ok?"#e6f7ed":"#fff0e8")+'"><h3>'+(ok?"✅ 正解！":"❌ 不正解")+'</h3><p><b>正解：</b>'+escapeHTML(q.correct)+'</p><p><b>🇨🇳 中文解析</b><br>'+escapeHTML(detailZh+" "+q.extraZh)+'</p><p><b>🇯🇵 日本語解説</b><br>'+escapeHTML(detailJa+" "+q.extraJa)+'</p>'+wordNotes(q)+'</div><div class="sp"></div><button class="primary" onclick="pos++;renderQ()">次の問題 →</button>'}
+function finishAnswer(given,choiceIndex){if(answered)return;answered=true;let q=quiz[pos],ok=given===q.correct;state.attempts++;if(ok)state.correct++;else if(!state.mistakes.includes(q.x.id))state.mistakes.push(q.x.id);if(ok)state.mistakes=state.mistakes.filter(id=>id!==q.x.id);save();document.querySelectorAll(".answer").forEach((b,j)=>{b.disabled=true;if(q.choices[j]===q.correct)b.classList.add("correct");else if(j===choiceIndex)b.classList.add("wrong")});document.querySelectorAll("#wordBank button").forEach(b=>b.disabled=true);const context=bilingualExplanation(q);const detailZh=(ok?"回答正确！":"你选择了「"+given+"」。")+context.zh;const detailJa=(ok?"正解です！":"選んだ答えは「"+given+"」です。")+context.ja;$("#feedback").innerHTML='<div class="rule" style="margin-top:14px;background:'+(ok?"#e6f7ed":"#fff0e8")+'"><h3>'+(ok?"✅ 正解！":"❌ 不正解")+'</h3><p><b>正解：</b>'+escapeHTML(q.correct)+'</p><p><b>🇨🇳 中文解析</b><br>'+escapeHTML(detailZh+" "+q.extraZh)+'</p><p><b>🇯🇵 日本語解説</b><br>'+escapeHTML(detailJa+" "+q.extraJa)+'</p>'+wordNotes(q)+'</div><div class="sp"></div><button class="primary" onclick="pos++;renderQ()">次の問題 →</button>'}
 function stats(){shell('<div class="card"><h2>📊 学習記録</h2><p>学習済み：<b>'+state.done.length+'/'+data.length+'</b></p><p>回答数：<b>'+state.attempts+'</b></p><p>正答率：<b>'+(state.attempts?Math.round(state.correct/state.attempts*100):0)+'%</b></p><p>復習対象：<b>'+state.mistakes.length+'</b></p><div class="row"><button onclick="startQuiz(20,null,true)">❌ 間違いを復習</button><button onclick="exportData()">📤 記録を保存</button></div></div><div class="card"><h3>データ管理</h3><p class="muted">記録はこのブラウザ内に保存されます。Safariのデータ削除で消える場合があります。</p><input type="file" accept="application/json" onchange="importData(event)"><div class="sp"></div><button onclick="if(confirm(\x27記録を消去しますか？\x27)){localStorage.removeItem(\x27topik-progress\x27);location.reload()}">記録をリセット</button></div>')}
 function exportData(){let a=document.createElement("a"),b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});a.href=URL.createObjectURL(b);a.download="topik-progress.json";a.click();URL.revokeObjectURL(a.href)}
 function importData(e){let f=e.target.files[0];if(!f)return;f.text().then(t=>{try{let o=JSON.parse(t);if(!Array.isArray(o.done)||!Array.isArray(o.mistakes))throw Error();state=o;save();stats()}catch{alert("読み込めませんでした")}})}
