@@ -76,21 +76,18 @@ function makeQ(x,forced){
  const match=x.words.find(w=>x.ko.includes(w))||x.ko.replace(/[.!?]$/,"").split(" ").slice(-1)[0];
  const entry=exerciseFor(x.id),sentence=entry[1],target=entry[2],wrong=entry.slice(3,6),lexicon=entry[6];
  if(type==="穴埋め"){
-   prompt="【穴埋め】文脈に合う形を選んでください。\\n"+sentence.replace(target,"＿＿＿")+"\\n🇯🇵 "+x.ja+" ／ "+x.title;
+   prompt="【穴埋め】文脈に合う形を選んでください。\n"+sentence.replace(target,"＿＿＿")+"\n🇯🇵 "+x.ja+" ／ "+x.title;
    correct=target;choices=shuffle([target,...wrong]);extraZh="完整例句："+sentence;extraJa="完成文："+sentence;
  }else if(type==="活用"){
-   prompt="【活用】次の文を完成させる正しい形は？\\n"+sentence.replace(target,"＿＿＿")+"\\n文法："+x.title;
+   prompt="【活用】次の文を完成させる正しい形は？\n"+sentence.replace(target,"＿＿＿")+"\n文法："+x.title;
    correct=target;choices=shuffle([target,...wrong]);extraZh="完整例句："+sentence;extraJa="完成文："+sentence;
  }else if(type==="間違い探し"){
-   prompt="【間違い探し】次の文の空欄に入れると文法的に誤る形は？\\n"+sentence.replace(target,"＿＿＿");
-   correct=wrong[0];choices=shuffle([wrong[0],target,...wrong.slice(1)]); 
-   // Multiple incorrect options would make this ambiguous: instead test one explicit malformed sentence.
-   prompt="【間違い探し】次の文の誤った表現を正しく直してください。\\n"+sentence.replace(target,wrong[0]);
+   prompt="【間違い探し】次の文の誤った表現を正しく直してください。\n"+sentence.replace(target,wrong[0]);
    correct=target;choices=shuffle([target,...wrong]);extraZh="错误形式："+wrong[0]+"；正确形式："+target+"。";extraJa="誤った形："+wrong[0]+"。正しい形："+target+"。";
  }else if(type==="語順"){
-   prompt="【語順】語句を正しい順番に並べましょう。\\n🇯🇵 "+x.j;
-   const clean=sentence.replace(/[.!?]$/,""),tokens=clean.split(/\\s+/);
-   if(tokens.length<2){kind="穴埋め";prompt="【穴埋め】空欄に入る形は？\\n"+sentence.replace(target,"＿＿＿");correct=target;choices=shuffle([target,...wrong])}
+   prompt="【語順】語句を正しい順番に並べましょう。\n🇯🇵 "+x.j;
+   const clean=sentence.replace(/[.!?]$/,""),tokens=clean.split(/\s+/);
+   if(tokens.length<2){kind="穴埋め";prompt="【穴埋め】空欄に入る形は？\n"+sentence.replace(target,"＿＿＿");correct=target;choices=shuffle([target,...wrong])}
    else {order=tokens;correct=clean;choices=[];extraZh="正确句子："+sentence+"。注意助词、词尾和句子顺序。";extraJa="正しい文："+sentence+"。助詞・語尾・語順を確認しましょう。"}
  }else if(type==="韓日翻訳"){prompt="【韓日翻訳】次の韓国語の意味は？\n"+x.ko;correct=x.j;choices=choicesFor(correct,other.map(v=>v.j))}
  else if(type==="日韓翻訳"){prompt="【日韓翻訳】「"+x.j+"」に合う韓国語は？";correct=x.ko;choices=choicesFor(correct,other.map(v=>v.ko))}
